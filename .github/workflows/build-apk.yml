@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Setup Java JDK
         uses: actions/setup-java@v4
@@ -23,19 +23,20 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Create dummy icon if missing
+      - name: Ensure Web Files Exist
         run: |
-          if [ ! -f favicon.ico ]; then
-            touch favicon.ico
+          if [ ! -f index.html ]; then
+            echo "<html><body><h1>Draft Calcetto 5v5</h1></body></html>" > index.html
           fi
+          touch favicon.ico
 
-      - name: Install Capacitor & Build APK
+      - name: Install Dependencies & Build Android
         run: |
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm install @capacitor/core@latest @capacitor/cli@latest @capacitor/android@latest
           npx cap init "Draft Calcetto" "com.calcetto.draft5v5" --web-dir .
           npx cap add android
-          npx cap copy
+          npx cap copy android
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
